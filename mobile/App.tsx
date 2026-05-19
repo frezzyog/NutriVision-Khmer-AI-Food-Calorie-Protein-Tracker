@@ -113,8 +113,11 @@ export default function App() {
       <StatusBar style="light" />
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.hero}>
+          <View style={styles.logoMark}>
+            <Text style={styles.logoText}>NV</Text>
+          </View>
           <Text style={styles.title}>NutriVision Khmer</Text>
-          <Text style={styles.subtitle}>AI Food Calorie & Protein Tracker</Text>
+          <Text style={styles.subtitle}>Everything you eat. Everything you need.</Text>
         </View>
 
         <View style={styles.notice}>
@@ -324,15 +327,16 @@ function getProtein(result: ApiResult | null) {
 }
 
 const colors = {
-  background: "#0e1117",
-  panel: "#ffffff",
+  background: "#020403",
+  panel: "#07110b",
   text: "#fafafa",
-  darkText: "#111827",
-  muted: "#6b7280",
-  border: "#e5e7eb",
-  primary: "#ff4b4b",
-  warningBg: "#4a2429",
-  warningText: "#ff6b6b",
+  darkText: "#f8fafc",
+  muted: "#b6c7b5",
+  border: "rgba(126, 255, 0, 0.28)",
+  primary: "#7eff00",
+  primaryDark: "#061006",
+  warningBg: "#142111",
+  warningText: "#b8ff75",
 };
 
 const styles = StyleSheet.create({
@@ -347,16 +351,37 @@ const styles = StyleSheet.create({
   hero: {
     paddingTop: 10,
     paddingBottom: 4,
+    alignItems: "center",
+  },
+  logoMark: {
+    width: 78,
+    height: 78,
+    borderRadius: 24,
+    backgroundColor: colors.primary,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 14,
+    shadowColor: colors.primary,
+    shadowOpacity: 0.45,
+    shadowRadius: 18,
+  },
+  logoText: {
+    color: colors.primaryDark,
+    fontSize: 26,
+    fontWeight: "900",
   },
   title: {
-    fontSize: 32,
-    fontWeight: "800",
+    fontSize: 36,
+    fontWeight: "900",
     color: colors.text,
+    textAlign: "center",
   },
   subtitle: {
-    fontSize: 16,
-    color: "#d1d5db",
-    marginTop: 4,
+    fontSize: 17,
+    color: colors.muted,
+    marginTop: 8,
+    textAlign: "center",
+    fontWeight: "700",
   },
   notice: {
     backgroundColor: colors.warningBg,
@@ -364,12 +389,14 @@ const styles = StyleSheet.create({
     padding: 14,
   },
   noticeText: {
-    color: "#ffb4b4",
+    color: colors.warningText,
     lineHeight: 20,
   },
   segment: {
     flexDirection: "row",
-    backgroundColor: "#1f2937",
+    backgroundColor: "#07110b",
+    borderWidth: 1,
+    borderColor: colors.border,
     borderRadius: 8,
     padding: 4,
     gap: 4,
@@ -388,11 +415,11 @@ const styles = StyleSheet.create({
   segmentText: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#d1d5db",
+    color: colors.muted,
     textAlign: "center",
   },
   segmentTextActive: {
-    color: "#ffffff",
+    color: colors.primaryDark,
   },
   panel: {
     backgroundColor: colors.panel,
@@ -410,14 +437,14 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#374151",
+    color: colors.muted,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#cbd5e1",
+    borderColor: colors.border,
     borderRadius: 8,
     padding: 12,
-    backgroundColor: "#f9fafb",
+    backgroundColor: "#020403",
     color: colors.darkText,
   },
   actions: {
@@ -440,7 +467,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonText: {
-    color: "#ffffff",
+    color: colors.primaryDark,
     fontWeight: "800",
   },
   buttonSecondaryText: {
@@ -457,30 +484,30 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   primaryButtonText: {
-    color: "#ffffff",
+    color: colors.primaryDark,
     fontWeight: "800",
   },
   preview: {
     width: "100%",
     height: 280,
     borderRadius: 8,
-    backgroundColor: "#e5e7eb",
+    backgroundColor: "#0d1f12",
   },
   emptyPreview: {
     height: 160,
     borderRadius: 8,
     borderWidth: 1,
     borderStyle: "dashed",
-    borderColor: "#cbd5e1",
+    borderColor: colors.border,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#f9fafb",
+    backgroundColor: "#020403",
   },
   emptyText: {
     color: colors.muted,
   },
   resultBox: {
-    backgroundColor: "#f9fafb",
+    backgroundColor: "#0b160f",
     borderRadius: 8,
     padding: 14,
     gap: 10,
@@ -492,18 +519,18 @@ const styles = StyleSheet.create({
   },
   resultText: {
     fontSize: 15,
-    color: "#374151",
+    color: "#d7f5d0",
   },
   warningText: {
     color: "#92400e",
   },
   errorBox: {
-    backgroundColor: "#fee2e2",
+    backgroundColor: "#2b1010",
     borderRadius: 8,
     padding: 14,
   },
   errorText: {
-    color: "#b91c1c",
+    color: "#ff8c8c",
     fontWeight: "700",
   },
   mutedText: {
@@ -511,7 +538,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   ocrText: {
-    color: "#4b5563",
+    color: colors.muted,
     lineHeight: 20,
   },
   metricRow: {
@@ -524,7 +551,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: 8,
     padding: 12,
-    backgroundColor: "#ffffff",
+    backgroundColor: "#0b160f",
   },
   metricLabel: {
     color: colors.muted,
@@ -545,14 +572,14 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   progressLabel: {
-    color: "#374151",
+    color: colors.muted,
     fontSize: 13,
     fontWeight: "700",
   },
   progressTrack: {
     height: 10,
     borderRadius: 999,
-    backgroundColor: "#e5e7eb",
+    backgroundColor: "#15311c",
     overflow: "hidden",
   },
   progressFill: {
@@ -564,8 +591,8 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   statusText: {
-    color: "#166534",
-    backgroundColor: "#dcfce7",
+    color: colors.primary,
+    backgroundColor: "#0b2613",
     borderRadius: 8,
     padding: 10,
     fontWeight: "700",

@@ -16,6 +16,213 @@ from ocr_utils import extract_text_from_image, parse_nutrition_text
 LOW_CONFIDENCE_THRESHOLD = 0.60
 
 
+def apply_theme():
+    """Apply the neon health-tech visual style."""
+    st.markdown(
+        """
+        <style>
+        .stApp {
+            background:
+                radial-gradient(circle at 50% 0%, rgba(126, 255, 0, 0.18), transparent 28rem),
+                radial-gradient(circle at 100% 10%, rgba(0, 255, 128, 0.11), transparent 22rem),
+                #020403;
+            color: #f8fafc;
+        }
+        h1, h2, h3, .stMarkdown, label, p {
+            color: #f8fafc !important;
+        }
+        h1 {
+            font-size: 4rem !important;
+            line-height: 1 !important;
+            letter-spacing: 0 !important;
+        }
+        h2, h3 {
+            letter-spacing: 0 !important;
+        }
+        section[data-testid="stSidebar"], header[data-testid="stHeader"] {
+            background: transparent;
+        }
+        div[data-testid="stMetric"] {
+            background: linear-gradient(180deg, rgba(10, 24, 16, 0.95), rgba(4, 10, 8, 0.95));
+            border: 1px solid rgba(126, 255, 0, 0.28);
+            border-radius: 14px;
+            padding: 1rem;
+            box-shadow: 0 0 24px rgba(126, 255, 0, 0.08);
+        }
+        div[data-testid="stMetric"] label, div[data-testid="stMetric"] [data-testid="stMetricValue"] {
+            color: #f8fafc !important;
+        }
+        .stButton > button {
+            background: linear-gradient(135deg, #7eff00, #00d47a);
+            color: #061006;
+            border: 0;
+            border-radius: 12px;
+            font-weight: 800;
+            box-shadow: 0 0 22px rgba(126, 255, 0, 0.28);
+        }
+        .stButton > button:hover {
+            color: #061006;
+            border: 0;
+            filter: brightness(1.06);
+        }
+        .stRadio [role="radiogroup"] {
+            background: rgba(8, 20, 13, 0.86);
+            border: 1px solid rgba(126, 255, 0, 0.28);
+            border-radius: 14px;
+            padding: 0.55rem;
+        }
+        div[data-testid="stAlert"] {
+            border-radius: 14px;
+            border: 1px solid rgba(126, 255, 0, 0.22);
+        }
+        .stSelectbox, .stTextInput, .stNumberInput, .stFileUploader, .stCameraInput, .stTextArea {
+            color: #f8fafc;
+        }
+        .nv-hero {
+            text-align: center;
+            padding: 1.5rem 0 1rem;
+        }
+        .nv-logo {
+            width: 94px;
+            height: 94px;
+            margin: 0 auto 1rem;
+            display: grid;
+            place-items: center;
+            border-radius: 28px;
+            background: radial-gradient(circle at 35% 25%, #eaffd5, #7eff00 45%, #10220d 72%);
+            border: 1px solid rgba(126, 255, 0, 0.75);
+            box-shadow: 0 0 38px rgba(126, 255, 0, 0.48);
+            color: #061006;
+            font-size: 2.5rem;
+            font-weight: 900;
+        }
+        .nv-title {
+            font-size: clamp(3rem, 9vw, 5.5rem);
+            line-height: 1;
+            font-weight: 900;
+            color: #f8fafc;
+        }
+        .nv-title span, .nv-accent {
+            color: #7eff00;
+        }
+        .nv-subtitle {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: #f8fafc;
+            margin-top: 0.75rem;
+            font-weight: 700;
+        }
+        .nv-muted {
+            color: #b6c7b5;
+            margin-top: 0.75rem;
+        }
+        .nv-flow {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+        }
+        .nv-flow-card, .nv-feature, .nv-secure {
+            background: linear-gradient(180deg, rgba(9, 23, 14, 0.94), rgba(3, 8, 6, 0.96));
+            border: 1px solid rgba(126, 255, 0, 0.32);
+            border-radius: 16px;
+            padding: 1rem;
+            box-shadow: inset 0 0 30px rgba(126, 255, 0, 0.04), 0 0 28px rgba(126, 255, 0, 0.07);
+        }
+        .nv-flow-card strong {
+            color: #7eff00;
+        }
+        .nv-flow-card div:first-child {
+            font-size: 1.45rem;
+        }
+        .nv-features {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.7rem;
+            margin: 1.25rem 0;
+        }
+        .nv-feature {
+            text-align: center;
+            min-height: 108px;
+            display: grid;
+            place-items: center;
+            color: #f8fafc;
+        }
+        .nv-feature b {
+            color: #7eff00;
+            display: block;
+            font-size: 1.35rem;
+        }
+        .nv-secure {
+            margin: 1rem auto 1.5rem;
+            max-width: 720px;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        .nv-secure-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            display: grid;
+            place-items: center;
+            background: #7eff00;
+            color: #061006;
+            font-weight: 900;
+        }
+        @media (max-width: 760px) {
+            .nv-flow, .nv-features {
+                grid-template-columns: 1fr;
+            }
+            h1 {
+                font-size: 3rem !important;
+            }
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def show_hero():
+    """Show the branded top flow inspired by the reference image."""
+    st.markdown(
+        """
+        <div class="nv-hero">
+            <div class="nv-logo">NV</div>
+            <div class="nv-title">NutriVision <span>Khmer</span></div>
+            <div class="nv-subtitle">Everything you eat. Everything <span class="nv-accent">you need.</span></div>
+            <div class="nv-muted">Scan meals, read nutrition labels, and track smarter health goals.</div>
+        </div>
+        <div class="nv-flow">
+            <div class="nv-flow-card"><div>1</div><strong>You Scan</strong><br/>Take a food or label photo</div>
+            <div class="nv-flow-card"><div>2</div><strong>AI Analyzes</strong><br/>Classify food or read nutrition text</div>
+            <div class="nv-flow-card"><div>3</div><strong>Your Day</strong><br/>Track calories, protein, and goals</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def show_feature_strip():
+    """Show compact health feature cards."""
+    st.markdown(
+        """
+        <div class="nv-features">
+            <div class="nv-feature"><b>Scan</b>Food instantly</div>
+            <div class="nv-feature"><b>Track</b>Calories accurately</div>
+            <div class="nv-feature"><b>AI</b>Smarter insights</div>
+            <div class="nv-feature"><b>Goals</b>Reach targets faster</div>
+            <div class="nv-feature"><b>Health</b>Live better daily</div>
+        </div>
+        <div class="nv-secure">
+            <div class="nv-secure-icon">OK</div>
+            <div><strong class="nv-accent">Your data stays local.</strong><br/>Daily tracker data is stored only in this app session.</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 def initialize_tracker():
     """Create default session values the first time the app runs."""
     if "food_history" not in st.session_state:
@@ -305,12 +512,12 @@ def show_label_scanner():
 
 def main():
     st.set_page_config(page_title="NutriVision Khmer", layout="centered")
+    apply_theme()
 
     load_dotenv()
     initialize_tracker()
 
-    st.title("NutriVision Khmer")
-    st.caption("AI Food Calorie & Protein Tracker")
+    show_hero()
 
     st.warning(
         "Nutrition values are estimates only. Actual calories and protein depend on "
@@ -333,6 +540,8 @@ def main():
     if mode != "Daily Tracker":
         st.divider()
         show_daily_summary()
+
+    show_feature_strip()
 
 
 if __name__ == "__main__":
