@@ -113,11 +113,18 @@ export default function App() {
       <StatusBar style="light" />
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.hero}>
+          <Text style={styles.kicker}>AI Nutrition Vision</Text>
           <View style={styles.logoMark}>
             <Text style={styles.logoText}>NV</Text>
           </View>
           <Text style={styles.title}>NutriVision Khmer</Text>
           <Text style={styles.subtitle}>Everything you eat. Everything you need.</Text>
+        </View>
+
+        <View style={styles.flowRow}>
+          <FlowStep number="1" title="You Scan" text="We analyze" />
+          <FlowStep number="2" title="AI Scans" text="Food instantly" />
+          <FlowStep number="3" title="Your Day" text="Goals update" />
         </View>
 
         <View style={styles.notice}>
@@ -160,10 +167,23 @@ export default function App() {
               </View>
 
               {imageUri ? (
-                <Image source={{ uri: imageUri }} style={styles.preview} />
+                <View style={styles.scanShell}>
+                  <Image source={{ uri: imageUri }} style={styles.preview} />
+                  <View style={styles.scanCornerTopLeft} />
+                  <View style={styles.scanCornerTopRight} />
+                  <View style={styles.scanCornerBottomLeft} />
+                  <View style={styles.scanCornerBottomRight} />
+                  <View style={styles.scanLine} />
+                </View>
               ) : (
-                <View style={styles.emptyPreview}>
-                  <Text style={styles.emptyText}>No image selected</Text>
+                <View style={styles.scanShell}>
+                  <View style={styles.emptyPreview}>
+                    <Text style={styles.emptyText}>No image selected</Text>
+                  </View>
+                  <View style={styles.scanCornerTopLeft} />
+                  <View style={styles.scanCornerTopRight} />
+                  <View style={styles.scanCornerBottomLeft} />
+                  <View style={styles.scanCornerBottomRight} />
                 </View>
               )}
             </View>
@@ -207,6 +227,18 @@ function ModeButton({
     <Pressable onPress={onPress} style={[styles.segmentButton, active && styles.segmentActive]}>
       <Text style={[styles.segmentText, active && styles.segmentTextActive]}>{label}</Text>
     </Pressable>
+  );
+}
+
+function FlowStep({ number, title, text }: { number: string; title: string; text: string }) {
+  return (
+    <View style={styles.flowStep}>
+      <View style={styles.flowIcon}>
+        <Text style={styles.flowIconText}>{number}</Text>
+      </View>
+      <Text style={styles.flowTitle}>{title}</Text>
+      <Text style={styles.flowText}>{text}</Text>
+    </View>
   );
 }
 
@@ -268,6 +300,9 @@ function TrackerPanel({
   return (
     <View style={styles.panel}>
       <Text style={styles.sectionTitle}>{compact ? "Daily Summary" : "Daily Tracker"}</Text>
+      <View style={styles.ring}>
+        <Text style={styles.ringText}>{Math.round(calorieProgress * 100)}%</Text>
+      </View>
       <View style={styles.metricRow}>
         <Metric label="Total Calories" value={`${Math.round(calories)} kcal`} />
         <Metric label="Total Protein" value={`${protein.toFixed(1)} g`} />
@@ -353,6 +388,14 @@ const styles = StyleSheet.create({
     paddingBottom: 4,
     alignItems: "center",
   },
+  kicker: {
+    color: colors.primary,
+    fontSize: 11,
+    fontWeight: "900",
+    letterSpacing: 5,
+    textTransform: "uppercase",
+    marginBottom: 12,
+  },
   logoMark: {
     width: 78,
     height: 78,
@@ -387,6 +430,47 @@ const styles = StyleSheet.create({
     backgroundColor: colors.warningBg,
     borderRadius: 8,
     padding: 14,
+  },
+  flowRow: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  flowStep: {
+    flex: 1,
+    backgroundColor: "#07110b",
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 14,
+    padding: 10,
+    alignItems: "center",
+    minHeight: 104,
+  },
+  flowIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: 10,
+    backgroundColor: "rgba(126, 255, 0, 0.12)",
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 8,
+  },
+  flowIconText: {
+    color: colors.primary,
+    fontWeight: "900",
+  },
+  flowTitle: {
+    color: colors.primary,
+    fontSize: 12,
+    fontWeight: "900",
+    textAlign: "center",
+  },
+  flowText: {
+    color: colors.text,
+    fontSize: 11,
+    textAlign: "center",
+    marginTop: 3,
   },
   noticeText: {
     color: colors.warningText,
@@ -487,21 +571,81 @@ const styles = StyleSheet.create({
     color: colors.primaryDark,
     fontWeight: "800",
   },
+  scanShell: {
+    height: 280,
+    borderRadius: 24,
+    overflow: "hidden",
+    backgroundColor: "#0d1f12",
+    borderWidth: 1,
+    borderColor: "rgba(126, 255, 0, 0.35)",
+    position: "relative",
+  },
   preview: {
     width: "100%",
-    height: 280,
-    borderRadius: 8,
+    height: "100%",
     backgroundColor: "#0d1f12",
   },
   emptyPreview: {
-    height: 160,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderStyle: "dashed",
-    borderColor: colors.border,
+    height: "100%",
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#020403",
+  },
+  scanLine: {
+    position: "absolute",
+    left: 20,
+    right: 20,
+    top: "50%",
+    height: 3,
+    borderRadius: 999,
+    backgroundColor: "#00ff87",
+    shadowColor: "#00ff87",
+    shadowOpacity: 0.9,
+    shadowRadius: 14,
+  },
+  scanCornerTopLeft: {
+    position: "absolute",
+    top: 18,
+    left: 18,
+    width: 44,
+    height: 44,
+    borderTopWidth: 3,
+    borderLeftWidth: 3,
+    borderColor: "#00ff87",
+    borderTopLeftRadius: 14,
+  },
+  scanCornerTopRight: {
+    position: "absolute",
+    top: 18,
+    right: 18,
+    width: 44,
+    height: 44,
+    borderTopWidth: 3,
+    borderRightWidth: 3,
+    borderColor: "#00ff87",
+    borderTopRightRadius: 14,
+  },
+  scanCornerBottomLeft: {
+    position: "absolute",
+    bottom: 18,
+    left: 18,
+    width: 44,
+    height: 44,
+    borderBottomWidth: 3,
+    borderLeftWidth: 3,
+    borderColor: "#00ff87",
+    borderBottomLeftRadius: 14,
+  },
+  scanCornerBottomRight: {
+    position: "absolute",
+    bottom: 18,
+    right: 18,
+    width: 44,
+    height: 44,
+    borderBottomWidth: 3,
+    borderRightWidth: 3,
+    borderColor: "#00ff87",
+    borderBottomRightRadius: 14,
   },
   emptyText: {
     color: colors.muted,
@@ -566,6 +710,25 @@ const styles = StyleSheet.create({
   },
   progressWrap: {
     gap: 6,
+  },
+  ring: {
+    width: 118,
+    height: 118,
+    borderRadius: 59,
+    borderWidth: 14,
+    borderColor: colors.primary,
+    alignSelf: "center",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#020403",
+    shadowColor: colors.primary,
+    shadowOpacity: 0.45,
+    shadowRadius: 18,
+  },
+  ringText: {
+    color: colors.text,
+    fontSize: 24,
+    fontWeight: "900",
   },
   progressHeader: {
     flexDirection: "row",

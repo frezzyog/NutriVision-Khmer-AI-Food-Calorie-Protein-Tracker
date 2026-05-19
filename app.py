@@ -23,10 +23,17 @@ def apply_theme():
         <style>
         .stApp {
             background:
-                radial-gradient(circle at 50% 0%, rgba(126, 255, 0, 0.18), transparent 28rem),
-                radial-gradient(circle at 100% 10%, rgba(0, 255, 128, 0.11), transparent 22rem),
+                linear-gradient(125deg, transparent 0 72%, rgba(126, 255, 0, 0.16) 72% 72.4%, transparent 72.4%),
+                linear-gradient(140deg, transparent 0 78%, rgba(126, 255, 0, 0.10) 78% 78.4%, transparent 78.4%),
+                radial-gradient(circle at 50% 0%, rgba(126, 255, 0, 0.20), transparent 30rem),
+                radial-gradient(circle at 100% 8%, rgba(0, 255, 128, 0.13), transparent 22rem),
+                radial-gradient(circle at 0% 25%, rgba(126, 255, 0, 0.07), transparent 18rem),
                 #020403;
             color: #f8fafc;
+        }
+        .block-container {
+            max-width: 1180px;
+            padding-top: 2rem;
         }
         h1, h2, h3, .stMarkdown, label, p {
             color: #f8fafc !important;
@@ -80,7 +87,16 @@ def apply_theme():
         }
         .nv-hero {
             text-align: center;
-            padding: 1.5rem 0 1rem;
+            padding: 1.5rem 0 0.6rem;
+            position: relative;
+        }
+        .nv-kicker {
+            color: #7eff00;
+            font-size: 0.85rem;
+            font-weight: 900;
+            letter-spacing: 0.55rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
         }
         .nv-logo {
             width: 94px;
@@ -95,6 +111,15 @@ def apply_theme():
             color: #061006;
             font-size: 2.5rem;
             font-weight: 900;
+        }
+        .nv-logo::before {
+            content: "";
+            width: 42px;
+            height: 18px;
+            border: 3px solid #061006;
+            border-radius: 14px;
+            position: absolute;
+            transform: translateY(-10px);
         }
         .nv-title {
             font-size: clamp(3rem, 9vw, 5.5rem);
@@ -118,8 +143,9 @@ def apply_theme():
         .nv-flow {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 0.75rem;
-            margin: 1.5rem 0;
+            gap: 1rem;
+            margin: 1.6rem auto 1.4rem;
+            max-width: 920px;
         }
         .nv-flow-card, .nv-feature, .nv-secure {
             background: linear-gradient(180deg, rgba(9, 23, 14, 0.94), rgba(3, 8, 6, 0.96));
@@ -128,11 +154,148 @@ def apply_theme():
             padding: 1rem;
             box-shadow: inset 0 0 30px rgba(126, 255, 0, 0.04), 0 0 28px rgba(126, 255, 0, 0.07);
         }
+        .nv-flow-card {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            align-items: center;
+            column-gap: 0.8rem;
+            min-height: 78px;
+        }
         .nv-flow-card strong {
             color: #7eff00;
         }
-        .nv-flow-card div:first-child {
-            font-size: 1.45rem;
+        .nv-flow-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: rgba(126, 255, 0, 0.12);
+            border: 1px solid rgba(126, 255, 0, 0.45);
+            display: grid;
+            place-items: center;
+            color: #7eff00;
+            font-weight: 900;
+            font-size: 1.15rem;
+        }
+        .nv-flow-copy {
+            color: #f8fafc;
+            line-height: 1.25;
+        }
+        .nv-showcase {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1.25rem;
+            align-items: end;
+            margin: 1.2rem 0 1.8rem;
+        }
+        .nv-phone {
+            min-height: 410px;
+            border-radius: 34px;
+            padding: 1rem;
+            background: linear-gradient(180deg, #0c1210, #020403);
+            border: 2px solid rgba(255, 255, 255, 0.22);
+            box-shadow: 0 0 0 1px rgba(126, 255, 0, 0.16), 0 24px 48px rgba(0, 0, 0, 0.45);
+            overflow: hidden;
+            position: relative;
+        }
+        .nv-phone:nth-child(2) {
+            min-height: 450px;
+        }
+        .nv-phone-top {
+            display: flex;
+            justify-content: space-between;
+            color: #d7f5d0;
+            font-size: 0.8rem;
+            margin-bottom: 0.9rem;
+        }
+        .nv-scan-frame {
+            height: 220px;
+            border-radius: 22px;
+            position: relative;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at 50% 45%, rgba(255, 196, 86, 0.95), transparent 32%),
+                radial-gradient(circle at 42% 38%, rgba(222, 44, 44, 0.9), transparent 10%),
+                radial-gradient(circle at 62% 52%, rgba(107, 184, 54, 0.95), transparent 9%),
+                radial-gradient(circle at 58% 32%, rgba(222, 44, 44, 0.86), transparent 11%),
+                #172016;
+            border: 1px solid rgba(126, 255, 0, 0.32);
+        }
+        .nv-scan-frame::before,
+        .nv-scan-frame::after {
+            content: "";
+            position: absolute;
+            inset: 18px;
+            border: 2px solid #00ff87;
+            border-radius: 18px;
+            box-shadow: 0 0 18px rgba(0, 255, 135, 0.85);
+        }
+        .nv-scan-frame::after {
+            inset: 50% 12px auto;
+            height: 3px;
+            border: 0;
+            border-radius: 999px;
+            background: #00ff87;
+        }
+        .nv-phone-label {
+            text-align: center;
+            color: #f8fafc;
+            font-weight: 800;
+            margin: 1rem 0;
+        }
+        .nv-mini-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.65rem;
+            margin-top: 0.9rem;
+        }
+        .nv-mini-card {
+            background: rgba(126, 255, 0, 0.08);
+            border: 1px solid rgba(126, 255, 0, 0.20);
+            border-radius: 14px;
+            padding: 0.75rem;
+            color: #f8fafc;
+        }
+        .nv-mini-card b {
+            color: #7eff00;
+            display: block;
+            font-size: 1.2rem;
+        }
+        .nv-coach {
+            margin-top: 0.9rem;
+            background: rgba(0, 212, 122, 0.12);
+            border: 1px solid rgba(0, 212, 122, 0.26);
+            border-radius: 16px;
+            padding: 0.9rem;
+            color: #d7f5d0;
+        }
+        .nv-ring {
+            width: 116px;
+            height: 116px;
+            margin: 0.5rem auto 0.8rem;
+            border-radius: 50%;
+            background:
+                radial-gradient(circle at center, #061006 0 56%, transparent 57%),
+                conic-gradient(#00d47a 0 96deg, rgba(126, 255, 0, 0.18) 96deg 360deg);
+            display: grid;
+            place-items: center;
+            color: #f8fafc;
+            font-weight: 900;
+            font-size: 1.35rem;
+        }
+        .nv-bottom-nav {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.35rem;
+            margin-top: 1rem;
+        }
+        .nv-nav-dot {
+            height: 34px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            background: rgba(126, 255, 0, 0.08);
+            color: #7eff00;
+            font-size: 0.8rem;
         }
         .nv-features {
             display: grid;
@@ -146,6 +309,7 @@ def apply_theme():
             display: grid;
             place-items: center;
             color: #f8fafc;
+            line-height: 1.2;
         }
         .nv-feature b {
             color: #7eff00;
@@ -170,7 +334,7 @@ def apply_theme():
             font-weight: 900;
         }
         @media (max-width: 760px) {
-            .nv-flow, .nv-features {
+            .nv-flow, .nv-features, .nv-showcase {
                 grid-template-columns: 1fr;
             }
             h1 {
@@ -188,15 +352,53 @@ def show_hero():
     st.markdown(
         """
         <div class="nv-hero">
+            <div class="nv-kicker">AI Nutrition Vision</div>
             <div class="nv-logo">NV</div>
             <div class="nv-title">NutriVision <span>Khmer</span></div>
             <div class="nv-subtitle">Everything you eat. Everything <span class="nv-accent">you need.</span></div>
-            <div class="nv-muted">Scan meals, read nutrition labels, and track smarter health goals.</div>
+            <div class="nv-muted">Seamless tracking. Smarter insights. Better you.</div>
         </div>
         <div class="nv-flow">
-            <div class="nv-flow-card"><div>1</div><strong>You Scan</strong><br/>Take a food or label photo</div>
-            <div class="nv-flow-card"><div>2</div><strong>AI Analyzes</strong><br/>Classify food or read nutrition text</div>
-            <div class="nv-flow-card"><div>3</div><strong>Your Day</strong><br/>Track calories, protein, and goals</div>
+            <div class="nv-flow-card"><div class="nv-flow-icon">1</div><div class="nv-flow-copy"><strong>You Scan</strong><br/>We analyze</div></div>
+            <div class="nv-flow-card"><div class="nv-flow-icon">2</div><div class="nv-flow-copy"><strong>AI Scans</strong><br/>Food instantly</div></div>
+            <div class="nv-flow-card"><div class="nv-flow-icon">3</div><div class="nv-flow-copy"><strong>AI Powers</strong><br/>Your day</div></div>
+        </div>
+        <div class="nv-showcase">
+            <div class="nv-phone">
+                <div class="nv-phone-top"><span>2:10 PM</span><span>SCAN</span></div>
+                <div class="nv-scan-frame"></div>
+                <div class="nv-phone-label">SCANNING...</div>
+                <div class="nv-mini-grid">
+                    <div class="nv-mini-card"><b>Food</b>Camera input</div>
+                    <div class="nv-mini-card"><b>Label</b>OCR scan</div>
+                </div>
+            </div>
+            <div class="nv-phone">
+                <div class="nv-phone-top"><span>&lt;</span><span>Add Food</span><span>+</span></div>
+                <div class="nv-scan-frame"></div>
+                <div class="nv-phone-label">Khmer meal detected</div>
+                <div class="nv-mini-grid">
+                    <div class="nv-mini-card"><b>550</b>Calories</div>
+                    <div class="nv-mini-card"><b>22g</b>Protein</div>
+                    <div class="nv-mini-card"><b>1x</b>Portion</div>
+                    <div class="nv-mini-card"><b>Manual</b>Correction</div>
+                </div>
+                <div class="nv-coach">AI Coach: Check the dropdown when confidence is low.</div>
+            </div>
+            <div class="nv-phone">
+                <div class="nv-phone-top"><span>NutriVision</span><span>Goals</span></div>
+                <div class="nv-coach"><strong>Good afternoon.</strong><br/>Let's keep calories balanced and protein steady.</div>
+                <div class="nv-ring">25%</div>
+                <div class="nv-mini-grid">
+                    <div class="nv-mini-card"><b>1904</b>kcal left</div>
+                    <div class="nv-mini-card"><b>60g</b>protein goal</div>
+                    <div class="nv-mini-card"><b>OCR</b>labels</div>
+                    <div class="nv-mini-card"><b>Local</b>tracker</div>
+                </div>
+                <div class="nv-bottom-nav">
+                    <div class="nv-nav-dot">Home</div><div class="nv-nav-dot">Scan</div><div class="nv-nav-dot">+</div><div class="nv-nav-dot">Goals</div><div class="nv-nav-dot">Me</div>
+                </div>
+            </div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -519,6 +721,7 @@ def main():
 
     show_hero()
 
+    st.markdown("### Live Demo")
     st.warning(
         "Nutrition values are estimates only. Actual calories and protein depend on "
         "ingredients, cooking method, and portion size."
