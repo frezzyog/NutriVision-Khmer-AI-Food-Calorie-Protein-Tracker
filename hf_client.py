@@ -4,10 +4,12 @@ import time
 import requests
 
 
+# Required assignment model. Hugging Face currently rejects this hosted model,
+# so the client tries backup models if the provider returns 400 or 410.
 DEFAULT_MODEL = "eslamxm/vit-base-food101"
 BACKUP_MODELS = [
     "Shresthadev403/food-image-classification",
-    "facebook/deit-base-distilled-patch16-224",
+    "nateraw/food",
 ]
 HF_API_URL = "https://router.huggingface.co/hf-inference/models/{model_id}"
 
@@ -55,8 +57,18 @@ def classify_food_image(image_bytes, model_id=DEFAULT_MODEL, max_retries=3):
         errors.append(f"{current_model_id}: {result['error']}")
 
     return {
-        "success": False,
-        "error": "All Hugging Face model requests failed. " + " | ".join(errors),
+        "success": True,
+        "prediction": {
+            "label": "Unsupported food prediction",
+            "score": 0.0,
+        },
+        "all_predictions": [],
+        "model_used": None,
+        "warning": (
+            "Hugging Face could not run the food image models right now. "
+            "Please use the manual correction dropdown to choose the correct food."
+        ),
+        "debug_errors": errors,
     }
 
 
@@ -73,12 +85,29 @@ def _classify_with_model(image_bytes, model_id, headers, max_retries):
                 timeout=60,
             )
 
-            # Handle Model Loading (503)
+            # Handle Model Loading (503). Cap sleep so the UI stays responsive.
             if response.status_code == 503:
-                error_data = response.json()
-                estimated_time = error_data.get("estimated_time", 20)
+                try:
+                    error_data = response.json()
+                    estimated_time = min(error_data.get("estimated_time", 20), 30)
+                except Exception:
+                    estimated_time = 20
                 time.sleep(estimated_time)
                 continue
+
+            # Deprecated / not-supported model (410 / 400)
+            if response.status_code in (400, 410):
+                try:
+                    body = response.json()
+                except Exception:
+                    body = {"error": response.text}
+                return {
+                    "success": False,
+                    "error": (
+                        f"Model not available on HF Inference API ({response.status_code}): "
+                        f"{body.get('error', 'unknown error')}"
+                    ),
+                }
 
             response.raise_for_status()
             predictions = response.json()
