@@ -87,24 +87,32 @@ def main():
 
             if not result["success"]:
                 st.error(result["error"])
+                if "Model is loading" in result["error"]:
+                    st.info("The AI model is waking up. Please try again in a few seconds.")
             else:
                 prediction = result["prediction"]
-                predicted_food = prediction["label"]
-                confidence = prediction["score"]
                 st.session_state.last_prediction = prediction
+                st.session_state.all_predictions = result["all_predictions"]
+                st.session_state.model_warning = result.get("warning")
 
     if "last_prediction" in st.session_state:
         prediction = st.session_state.last_prediction
         predicted_food = prediction["label"]
         confidence = prediction["score"]
 
-        st.success(f"Predicted food: **{predicted_food}**")
-        st.write(f"Confidence score: **{confidence:.2%}**")
+        st.success(f"Top Prediction: **{predicted_food}** ({confidence:.2%})")
+
+        if st.session_state.get("model_warning"):
+            st.warning(st.session_state.model_warning)
 
         if confidence < LOW_CONFIDENCE_THRESHOLD:
-            st.warning(
-                "Low confidence prediction. Please check the manual correction dropdown."
-            )
+            st.warning("Low confidence. See other suggestions below:")
+            other_suggestions = [
+                f"{p['label']} ({p['score']:.1%})"
+                for p in st.session_state.get("all_predictions", [])[1:4]
+            ]
+            if other_suggestions:
+                st.write("Alternatives: " + ", ".join(other_suggestions))
 
     st.header("3. Correct Food and Portion")
 

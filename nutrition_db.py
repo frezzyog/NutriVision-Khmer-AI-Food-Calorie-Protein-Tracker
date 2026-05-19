@@ -1,3 +1,5 @@
+import difflib
+
 FOOD_DATABASE = {
     "Bai Sach Chrouk": {
         "calories": 550,
@@ -239,19 +241,25 @@ def get_food_names():
 
 
 def find_food_match(predicted_label):
-    """Match an AI label to a database item using simple text comparison."""
+    """
+    Match an AI label to a database item using fuzzy matching.
+    Returns the best match from FOOD_DATABASE keys.
+    """
     if not predicted_label:
         return None
 
-    normalized_label = predicted_label.lower().replace("_", " ").strip()
-    for food_name in FOOD_DATABASE:
-        normalized_food = food_name.lower()
-        if normalized_food == normalized_label:
-            return food_name
-        if normalized_food in normalized_label or normalized_label in normalized_food:
-            return food_name
+    # 1. Clean the label
+    label = predicted_label.lower().replace("_", " ").strip()
 
-    return None
+    # 2. Try exact match or substring match first (fast)
+    food_names = list(FOOD_DATABASE.keys())
+    for food in food_names:
+        if food.lower() == label or food.lower() in label or label in food.lower():
+            return food
+
+    # 3. Use fuzzy matching for more complex differences
+    matches = difflib.get_close_matches(label, food_names, n=1, cutoff=0.4)
+    return matches[0] if matches else None
 
 
 def calculate_nutrition(food_name, portion_option, custom_grams=None):
