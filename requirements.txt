@@ -5,3 +5,6 @@ pillow
 pandas
 easyocr
 opencv-python-headless
+fastapi
+uvicorn
+python-multipart

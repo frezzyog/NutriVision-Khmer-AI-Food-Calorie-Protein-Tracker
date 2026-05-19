@@ -1,0 +1,31 @@
+{
+  "expo": {
+    "name": "NutriVision Khmer",
+    "slug": "nutrivision-khmer",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "nutrivisionkhmer",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "Allow NutriVision Khmer to take food and nutrition label photos.",
+          "photosPermission": "Allow NutriVision Khmer to choose food and nutrition label photos."
+        }
+      ]
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "CAMERA"
+      ]
+    }
+  }
+}

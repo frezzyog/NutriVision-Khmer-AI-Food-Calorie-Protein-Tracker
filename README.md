@@ -49,6 +49,34 @@ streamlit run app.py
 - **Product Nutrition Label Scan**: upload or take a photo of a nutrition label, extract calories and protein with OCR, correct the values, and add the product to the tracker.
 - **Daily Tracker**: view total calories, total protein, daily goals, progress bars, and food history.
 
+## Expo Go Mobile Companion
+
+The `mobile/` folder contains an Expo Go companion app for phone camera testing. The mobile app sends photos to a small FastAPI backend, which reuses the same Hugging Face, OCR, and nutrition logic as Streamlit.
+
+1. Start the Python API from the project folder:
+
+```bash
+uvicorn api_server:app --host 0.0.0.0 --port 8000
+```
+
+2. Start the Expo app:
+
+```bash
+cd mobile
+pnpm install
+pnpm start
+```
+
+3. Open Expo Go on your phone and scan the QR code. Your phone must be on the same Wi-Fi as your laptop.
+
+4. In the Expo app, set the Python API URL to your laptop network address, for example:
+
+```text
+http://192.168.0.129:8000
+```
+
+Use the Streamlit app for the full tracker experience. Use the Expo app when you need reliable phone camera capture.
+
 ## Hugging Face Model
 
 The app uses:
