@@ -15,6 +15,6 @@ def show_image_preview(image_bytes):
     """Display a safe preview of the selected image."""
     try:
         image = Image.open(BytesIO(image_bytes))
-        st.image(image, caption="Selected food image", use_container_width=True)
+        st.image(image, caption="Selected food image", width="stretch")
     except Exception:
         st.error("The selected file could not be opened as an image.")

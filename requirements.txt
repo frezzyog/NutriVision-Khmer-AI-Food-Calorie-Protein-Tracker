@@ -3,3 +3,5 @@ requests
 python-dotenv
 pillow
 pandas
+easyocr
+opencv-python-headless

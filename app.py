@@ -10,70 +10,139 @@ from nutrition_db import (
     find_food_match,
     get_food_names,
 )
+from ocr_utils import extract_text_from_image, parse_nutrition_text
 
 
 LOW_CONFIDENCE_THRESHOLD = 0.60
 
 
 def initialize_tracker():
-    """Create an empty food history list the first time the app runs."""
+    """Create default session values the first time the app runs."""
     if "food_history" not in st.session_state:
         st.session_state.food_history = []
+    if "calorie_goal" not in st.session_state:
+        st.session_state.calorie_goal = 2000
+    if "protein_goal" not in st.session_state:
+        st.session_state.protein_goal = 60
+
+
+def get_daily_totals():
+    """Calculate current daily calories and protein."""
+    total_calories = sum(item["Calories"] for item in st.session_state.food_history)
+    total_protein = sum(item["Protein (g)"] for item in st.session_state.food_history)
+    return total_calories, total_protein
+
+
+def add_tracker_entry(food, category, portion, calories, protein, source):
+    """Add one food or product entry to the daily tracker."""
+    st.session_state.food_history.append(
+        {
+            "Food": food,
+            "Category": category,
+            "Portion": portion,
+            "Calories": round(calories, 1),
+            "Protein (g)": round(protein, 1),
+            "Source": source,
+        }
+    )
+
+
+def show_health_goals():
+    """Show daily goal inputs and progress bars."""
+    st.subheader("Health Goals")
+
+    col1, col2 = st.columns(2)
+    st.session_state.calorie_goal = col1.number_input(
+        "Daily calorie target",
+        min_value=500,
+        max_value=6000,
+        value=int(st.session_state.calorie_goal),
+        step=50,
+    )
+    st.session_state.protein_goal = col2.number_input(
+        "Daily protein target (g)",
+        min_value=10,
+        max_value=300,
+        value=int(st.session_state.protein_goal),
+        step=5,
+    )
+
+    total_calories, total_protein = get_daily_totals()
+    calorie_goal = st.session_state.calorie_goal
+    protein_goal = st.session_state.protein_goal
+
+    st.progress(min(total_calories / calorie_goal, 1.0), text="Calories progress")
+    st.progress(min(total_protein / protein_goal, 1.0), text="Protein progress")
+
+    col3, col4 = st.columns(2)
+    col3.metric("Remaining Calories", f"{calorie_goal - total_calories:.0f} kcal")
+    col4.metric("Remaining Protein", f"{protein_goal - total_protein:.1f} g")
+
+    if total_calories <= calorie_goal:
+        st.success("Within daily calorie goal")
+    else:
+        st.warning("Over daily calorie goal")
+
+    if total_protein >= protein_goal:
+        st.success("Protein goal reached")
+    else:
+        st.info("More protein needed")
 
 
 def show_daily_summary():
-    """Display total calories, protein, and food history."""
-    st.subheader("Daily Summary")
+    """Display total calories, protein, health goals, and food history."""
+    st.header("Daily Tracker")
 
-    total_calories = sum(item["Calories"] for item in st.session_state.food_history)
-    total_protein = sum(item["Protein (g)"] for item in st.session_state.food_history)
+    total_calories, total_protein = get_daily_totals()
 
     col1, col2 = st.columns(2)
     col1.metric("Total Calories", f"{total_calories:.0f} kcal")
     col2.metric("Total Protein", f"{total_protein:.1f} g")
 
+    show_health_goals()
+
     st.subheader("Food History")
     if st.session_state.food_history:
-        st.dataframe(pd.DataFrame(st.session_state.food_history), use_container_width=True)
+        st.dataframe(pd.DataFrame(st.session_state.food_history), width="stretch")
     else:
         st.info("No food added yet.")
 
+    if st.button("Clear Daily Tracker"):
+        st.session_state.food_history = []
+        st.rerun()
 
-def main():
-    st.set_page_config(page_title="NutriVision Khmer", layout="centered")
 
-    load_dotenv()
-    initialize_tracker()
-
-    st.title("NutriVision Khmer")
-    st.caption("AI Food Calorie & Protein Tracker")
-
-    st.warning(
-        "Nutrition values are estimates only. Actual calories and protein depend on "
-        "ingredients, cooking method, and portion size."
-    )
-
-    st.header("1. Add a Food Image")
+def choose_image_input(label_prefix):
+    """Let the user upload an image or take a photo."""
     image_source = st.radio(
-        "Choose image source",
+        f"{label_prefix} image source",
         ["Upload image", "Take photo"],
         horizontal=True,
     )
 
-    image_file = None
     if image_source == "Upload image":
-        image_file = st.file_uploader("Upload a food image", type=["jpg", "jpeg", "png", "webp"])
+        image_file = st.file_uploader(
+            f"Upload {label_prefix.lower()} image",
+            type=["jpg", "jpeg", "png", "webp"],
+        )
     else:
-        image_file = st.camera_input("Take a food photo")
+        image_file = st.camera_input(f"Take {label_prefix.lower()} photo")
 
-    image_bytes = get_image_bytes(image_file)
+    return get_image_bytes(image_file)
+
+
+def show_food_photo_analysis():
+    """Food photo classification and manual correction workflow."""
+    st.header("Food Photo Analysis")
+
+    image_bytes = choose_image_input("Food")
 
     if image_bytes:
         show_image_preview(image_bytes)
     else:
-        st.info("Upload an image or take a photo to start.")
+        st.info("Upload a food image or take a photo to start.")
 
-    st.header("2. AI Prediction")
+    st.subheader("AI Prediction")
     prediction = None
     predicted_food = None
     confidence = 0.0
@@ -87,11 +156,8 @@ def main():
 
             if not result["success"]:
                 st.error(result["error"])
-                if "Model is loading" in result["error"]:
-                    st.info("The AI model is waking up. Please try again in a few seconds.")
             else:
-                prediction = result["prediction"]
-                st.session_state.last_prediction = prediction
+                st.session_state.last_prediction = result["prediction"]
                 st.session_state.all_predictions = result["all_predictions"]
                 st.session_state.model_warning = result.get("warning")
 
@@ -106,23 +172,21 @@ def main():
             st.warning(st.session_state.model_warning)
 
         if confidence < LOW_CONFIDENCE_THRESHOLD:
-            st.warning("Low confidence. See other suggestions below:")
+            st.warning("Low confidence. Please check the manual correction dropdown.")
             other_suggestions = [
-                f"{p['label']} ({p['score']:.1%})"
-                for p in st.session_state.get("all_predictions", [])[1:4]
+                f"{item['label']} ({item['score']:.1%})"
+                for item in st.session_state.get("all_predictions", [])[1:4]
             ]
             if other_suggestions:
                 st.write("Alternatives: " + ", ".join(other_suggestions))
 
-    st.header("3. Correct Food and Portion")
+    st.subheader("Correct Food and Portion")
 
     food_names = get_food_names()
     matched_food = find_food_match(predicted_food) if predicted_food else None
 
     if predicted_food and not matched_food:
-        st.warning(
-            "Unsupported food prediction. Please choose the closest food manually."
-        )
+        st.warning("Unsupported food prediction. Please choose the closest food manually.")
 
     default_index = food_names.index(matched_food) if matched_food in food_names else 0
     selected_food = st.selectbox(
@@ -149,7 +213,7 @@ def main():
     nutrition = calculate_nutrition(selected_food, portion_option, custom_grams)
     food_info = FOOD_DATABASE[selected_food]
 
-    st.header("4. Estimated Nutrition")
+    st.subheader("Estimated Nutrition")
     st.write(f"Serving reference: **{food_info['serving']}**")
     st.write(f"Category: **{food_info['category']}**")
 
@@ -157,23 +221,118 @@ def main():
     col1.metric("Calories", f"{nutrition['calories']:.0f} kcal")
     col2.metric("Protein", f"{nutrition['protein']:.1f} g")
 
-    if st.button("Add to Daily Tracker"):
-        st.session_state.food_history.append(
-            {
-                "Food": selected_food,
-                "Category": food_info["category"],
-                "Portion": nutrition["portion_label"],
-                "Calories": round(nutrition["calories"], 1),
-                "Protein (g)": round(nutrition["protein"], 1),
-            }
+    if st.button("Add Food to Daily Tracker"):
+        source = "Manual Correction" if selected_food != matched_food else "Food Image"
+        add_tracker_entry(
+            selected_food,
+            food_info["category"],
+            nutrition["portion_label"],
+            nutrition["calories"],
+            nutrition["protein"],
+            source,
         )
         st.success(f"Added {selected_food} to daily tracker.")
 
-    show_daily_summary()
 
-    if st.button("Clear Daily Tracker"):
-        st.session_state.food_history = []
-        st.rerun()
+def show_label_scanner():
+    """Nutrition label OCR workflow for packaged food and drinks."""
+    st.header("Product Nutrition Label Scan")
+
+    image_bytes = choose_image_input("Nutrition label")
+
+    if image_bytes:
+        show_image_preview(image_bytes)
+    else:
+        st.info("Upload a nutrition label image or take a photo to start.")
+
+    if st.button("Scan Nutrition Label", type="primary"):
+        if not image_bytes:
+            st.error("No label image uploaded. Please upload a label or take a photo first.")
+        else:
+            with st.spinner("Reading nutrition label with EasyOCR..."):
+                try:
+                    ocr_text = extract_text_from_image(image_bytes)
+                except Exception as error:
+                    st.error(f"OCR failed: {error}")
+                else:
+                    st.session_state.ocr_text = ocr_text
+                    st.session_state.parsed_nutrition = parse_nutrition_text(ocr_text)
+
+    if "ocr_text" in st.session_state:
+        st.subheader("Detected Text")
+        st.text_area("OCR result", st.session_state.ocr_text, height=160)
+
+    parsed = st.session_state.get("parsed_nutrition", {})
+    detected_calories = parsed.get("calories") if parsed else None
+    detected_protein = parsed.get("protein") if parsed else None
+
+    st.subheader("Confirm Product Nutrition")
+    product_name = st.text_input("Product name", value="Packaged food")
+    serving = st.text_input("Serving amount", value="1 serving")
+
+    calories = st.number_input(
+        "Calories from label",
+        min_value=0.0,
+        max_value=5000.0,
+        value=float(detected_calories or 0),
+        step=10.0,
+    )
+    protein = st.number_input(
+        "Protein from label (g)",
+        min_value=0.0,
+        max_value=300.0,
+        value=float(detected_protein or 0),
+        step=1.0,
+    )
+
+    if detected_calories is None or detected_protein is None:
+        st.info("OCR may miss values. Please correct calories and protein before adding.")
+
+    if st.button("Add Product to Daily Tracker"):
+        if calories == 0 and protein == 0:
+            st.error("Please enter calories or protein before adding this product.")
+        else:
+            add_tracker_entry(
+                product_name,
+                "Packaged Product",
+                serving,
+                calories,
+                protein,
+                "Nutrition Label",
+            )
+            st.success(f"Added {product_name} to daily tracker.")
+
+
+def main():
+    st.set_page_config(page_title="NutriVision Khmer", layout="centered")
+
+    load_dotenv()
+    initialize_tracker()
+
+    st.title("NutriVision Khmer")
+    st.caption("AI Food Calorie & Protein Tracker")
+
+    st.warning(
+        "Nutrition values are estimates only. Actual calories and protein depend on "
+        "ingredients, cooking method, and portion size."
+    )
+
+    mode = st.radio(
+        "Choose app mode",
+        ["Food Photo Analysis", "Product Nutrition Label Scan", "Daily Tracker"],
+        horizontal=True,
+    )
+
+    if mode == "Food Photo Analysis":
+        show_food_photo_analysis()
+    elif mode == "Product Nutrition Label Scan":
+        show_label_scanner()
+    else:
+        show_daily_summary()
+
+    if mode != "Daily Tracker":
+        st.divider()
+        show_daily_summary()
 
 
 if __name__ == "__main__":
