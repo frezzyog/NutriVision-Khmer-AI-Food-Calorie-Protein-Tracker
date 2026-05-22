@@ -32,6 +32,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from "react-native";
 
@@ -62,15 +63,16 @@ const sampleFood: FoodResult = {
   source: "sample",
 };
 
-const API_BASE_URL = "http://192.168.0.129:8000";
+const DEFAULT_API_BASE_URL = "http://192.168.0.218:8000";
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>("landing");
   const [capturedImageUri, setCapturedImageUri] = useState<string | null>(null);
   const [foodResult, setFoodResult] = useState<FoodResult>(sampleFood);
+  const [apiBaseUrl, setApiBaseUrl] = useState(DEFAULT_API_BASE_URL);
 
   async function handleAnalyzeFood(imageUri: string) {
-    const result = await analyzeFoodImage(imageUri);
+    const result = await analyzeFoodImage(imageUri, apiBaseUrl);
     setFoodResult(result);
     setScreen("result");
   }
@@ -79,7 +81,12 @@ export default function App() {
     <SafeAreaView style={styles.app}>
       <StatusBar style="light" />
       {screen === "landing" ? (
-        <LandingScreen onStartScan={() => setScreen("scan")} onDashboard={() => setScreen("dashboard")} />
+        <LandingScreen
+          apiBaseUrl={apiBaseUrl}
+          onApiBaseUrlChange={setApiBaseUrl}
+          onStartScan={() => setScreen("scan")}
+          onDashboard={() => setScreen("dashboard")}
+        />
       ) : null}
       {screen === "scan" ? (
         <ScanScreen
@@ -113,7 +120,7 @@ export default function App() {
   );
 }
 
-async function analyzeFoodImage(imageUri: string): Promise<FoodResult> {
+async function analyzeFoodImage(imageUri: string, apiBaseUrl: string): Promise<FoodResult> {
   // Sends the real phone image to the Python FastAPI backend.
   // Later, this can be expanded to include portion size or OCR label scanning.
   const formData = new FormData();
@@ -124,7 +131,7 @@ async function analyzeFoodImage(imageUri: string): Promise<FoodResult> {
   } as unknown as Blob);
 
   try {
-    const response = await fetch(`${API_BASE_URL}/analyze-food`, {
+    const response = await fetch(`${apiBaseUrl}/analyze-food`, {
       method: "POST",
       body: formData,
     });
@@ -202,9 +209,13 @@ function buildCoachMessage(foodName: string, calories: number, protein: number, 
 }
 
 function LandingScreen({
+  apiBaseUrl,
+  onApiBaseUrlChange,
   onStartScan,
   onDashboard,
 }: {
+  apiBaseUrl: string;
+  onApiBaseUrlChange: (value: string) => void;
   onStartScan: () => void;
   onDashboard: () => void;
 }) {
@@ -226,6 +237,21 @@ function LandingScreen({
         Everything you eat.{"\n"}Everything <Text style={styles.neonText}>you need.</Text>
       </Text>
       <Text style={styles.heroBody}>Seamless tracking. Smarter insights.{"\n"}Better you.</Text>
+
+      <GlowCard>
+        <View style={styles.apiCardContent}>
+          <Text style={styles.apiLabel}>Python FastAPI backend</Text>
+          <TextInput
+            value={apiBaseUrl}
+            onChangeText={onApiBaseUrlChange}
+            autoCapitalize="none"
+            autoCorrect={false}
+            keyboardType="url"
+            style={styles.apiInput}
+          />
+          <Text style={styles.apiHelp}>Use your laptop Wi-Fi IP, not localhost.</Text>
+        </View>
+      </GlowCard>
 
       <View style={styles.processRow}>
         <ProcessCard icon={<Camera color={colors.neon} size={24} />} title="1. You Scan" text="We Analyze" />
@@ -740,6 +766,28 @@ const styles = StyleSheet.create({
   },
   processRow: {
     gap: 10,
+  },
+  apiCardContent: {
+    gap: 10,
+  },
+  apiLabel: {
+    color: colors.white,
+    fontWeight: "900",
+    fontSize: 15,
+  },
+  apiInput: {
+    minHeight: 48,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: "rgba(2,4,3,0.75)",
+    color: colors.white,
+    paddingHorizontal: 14,
+    fontWeight: "700",
+  },
+  apiHelp: {
+    color: colors.textSecondary,
+    fontSize: 12,
   },
   glowCard: {
     backgroundColor: colors.card,
