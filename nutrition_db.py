@@ -1,222 +1,199 @@
 import difflib
 
+
+def food(calories, protein, serving, category):
+    """Small helper to keep the food database easy to read."""
+    return {
+        "calories": calories,
+        "protein": protein,
+        "serving": serving,
+        "category": category,
+    }
+
+
 FOOD_DATABASE = {
-    "Bai Sach Chrouk": {
-        "calories": 550,
-        "protein": 22,
-        "serving": "1 plate",
-        "category": "Khmer Food",
-    },
-    "Kuy Teav": {
-        "calories": 430,
-        "protein": 20,
-        "serving": "1 bowl",
-        "category": "Khmer Food",
-    },
-    "Num Banh Chok": {
-        "calories": 380,
-        "protein": 14,
-        "serving": "1 bowl",
-        "category": "Khmer Food",
-    },
-    "Fish Amok": {
-        "calories": 480,
-        "protein": 28,
-        "serving": "1 bowl with rice",
-        "category": "Khmer Food",
-    },
-    "Lok Lak": {
-        "calories": 620,
-        "protein": 35,
-        "serving": "1 plate",
-        "category": "Khmer Food",
-    },
-    "Bai Cha": {
-        "calories": 560,
-        "protein": 18,
-        "serving": "1 plate",
-        "category": "Khmer Food",
-    },
-    "Mee Cha": {
-        "calories": 590,
-        "protein": 19,
-        "serving": "1 plate",
-        "category": "Khmer Food",
-    },
-    "Cha Kroeung": {
-        "calories": 520,
-        "protein": 30,
-        "serving": "1 plate with rice",
-        "category": "Khmer Food",
-    },
-    "Samlor Korko": {
-        "calories": 360,
-        "protein": 18,
-        "serving": "1 bowl",
-        "category": "Khmer Food",
-    },
-    "Samlor Machu": {
-        "calories": 300,
-        "protein": 20,
-        "serving": "1 bowl",
-        "category": "Khmer Food",
-    },
-    "Prahok Ktis": {
-        "calories": 450,
-        "protein": 24,
-        "serving": "1 serving with vegetables",
-        "category": "Khmer Food",
-    },
-    "Nom Pang": {
-        "calories": 500,
-        "protein": 20,
-        "serving": "1 sandwich",
-        "category": "Khmer Food",
-    },
-    "Khmer Red Curry": {
-        "calories": 540,
-        "protein": 24,
-        "serving": "1 bowl with rice",
-        "category": "Khmer Food",
-    },
-    "Grilled Chicken with Rice": {
-        "calories": 620,
-        "protein": 38,
-        "serving": "1 plate",
-        "category": "Khmer Food",
-    },
-    "Pork Rice": {
-        "calories": 560,
-        "protein": 24,
-        "serving": "1 plate",
-        "category": "Khmer Food",
-    },
-    "Beef Skewers": {
-        "calories": 430,
-        "protein": 32,
-        "serving": "4 skewers",
-        "category": "Khmer Food",
-    },
-    "Fried Egg with Rice": {
-        "calories": 420,
-        "protein": 14,
-        "serving": "1 plate",
-        "category": "Khmer Food",
-    },
-    "Rice with Soup": {
-        "calories": 390,
-        "protein": 16,
-        "serving": "1 plate and 1 bowl",
-        "category": "Khmer Food",
-    },
-    "pizza": {
-        "calories": 285,
-        "protein": 12,
-        "serving": "1 slice",
-        "category": "International Food",
-    },
-    "hamburger": {
-        "calories": 540,
-        "protein": 25,
-        "serving": "1 burger",
-        "category": "International Food",
-    },
-    "fried rice": {
-        "calories": 520,
-        "protein": 16,
-        "serving": "1 plate",
-        "category": "International Food",
-    },
-    "sushi": {
-        "calories": 350,
-        "protein": 18,
-        "serving": "8 pieces",
-        "category": "International Food",
-    },
-    "fried chicken": {
-        "calories": 480,
-        "protein": 30,
-        "serving": "2 pieces",
-        "category": "International Food",
-    },
-    "sandwich": {
-        "calories": 420,
-        "protein": 20,
-        "serving": "1 sandwich",
-        "category": "International Food",
-    },
-    "spaghetti": {
-        "calories": 480,
-        "protein": 18,
-        "serving": "1 plate",
-        "category": "International Food",
-    },
-    "salad": {
-        "calories": 220,
-        "protein": 8,
-        "serving": "1 bowl",
-        "category": "International Food",
-    },
-    "ice cream": {
-        "calories": 270,
-        "protein": 5,
-        "serving": "1 cup",
-        "category": "International Food",
-    },
-    "cake": {
-        "calories": 350,
-        "protein": 5,
-        "serving": "1 slice",
-        "category": "International Food",
-    },
-    "steak": {
-        "calories": 650,
-        "protein": 50,
-        "serving": "1 steak",
-        "category": "International Food",
-    },
-    "omelette": {
-        "calories": 300,
-        "protein": 18,
-        "serving": "1 omelette",
-        "category": "International Food",
-    },
-    "apple": {
-        "calories": 95,
-        "protein": 0.5,
-        "serving": "1 medium apple",
-        "category": "International Food",
-    },
-    "banana": {
-        "calories": 105,
-        "protein": 1.3,
-        "serving": "1 medium banana",
-        "category": "International Food",
-    },
-    "rice": {
-        "calories": 205,
-        "protein": 4.3,
-        "serving": "1 cup cooked",
-        "category": "International Food",
-    },
-    "chicken": {
-        "calories": 335,
-        "protein": 38,
-        "serving": "1 cooked chicken breast",
-        "category": "International Food",
-    },
-    "fish": {
-        "calories": 240,
-        "protein": 36,
-        "serving": "1 fillet",
-        "category": "International Food",
-    },
-    "egg": {
-        "calories": 78,
-        "protein": 6,
-        "serving": "1 large egg",
-        "category": "International Food",
-    },
+    # Khmer / Cambodian foods
+    "Bai Sach Chrouk": food(550, 22, "1 plate", "Khmer Food"),
+    "Kuy Teav": food(430, 20, "1 bowl", "Khmer Food"),
+    "Num Banh Chok": food(380, 14, "1 bowl", "Khmer Food"),
+    "Fish Amok": food(480, 28, "1 bowl with rice", "Khmer Food"),
+    "Lok Lak": food(620, 35, "1 plate", "Khmer Food"),
+    "Bai Cha": food(560, 18, "1 plate", "Khmer Food"),
+    "Mee Cha": food(590, 19, "1 plate", "Khmer Food"),
+    "Cha Kroeung": food(520, 30, "1 plate with rice", "Khmer Food"),
+    "Samlor Korko": food(360, 18, "1 bowl", "Khmer Food"),
+    "Samlor Machu": food(300, 20, "1 bowl", "Khmer Food"),
+    "Prahok Ktis": food(450, 24, "1 serving with vegetables", "Khmer Food"),
+    "Nom Pang": food(500, 20, "1 sandwich", "Khmer Food"),
+    "Khmer Red Curry": food(540, 24, "1 bowl with rice", "Khmer Food"),
+    "Grilled Chicken with Rice": food(620, 38, "1 plate", "Khmer Food"),
+    "Pork Rice": food(560, 24, "1 plate", "Khmer Food"),
+    "Beef Skewers": food(430, 32, "4 skewers", "Khmer Food"),
+    "Fried Egg with Rice": food(420, 14, "1 plate", "Khmer Food"),
+    "Rice with Soup": food(390, 16, "1 plate and 1 bowl", "Khmer Food"),
+    "Khmer Beef Noodle Soup": food(470, 25, "1 bowl", "Khmer Food"),
+    "Chicken Rice Porridge": food(360, 21, "1 bowl", "Khmer Food"),
+    "Borbor Sach Moan": food(360, 21, "1 bowl", "Khmer Food"),
+    "Borbor Sach Chrouk": food(390, 19, "1 bowl", "Khmer Food"),
+    "Lort Cha": food(610, 18, "1 plate", "Khmer Food"),
+    "Nom Krok": food(310, 5, "6 pieces", "Khmer Food"),
+    "Num Pang Pate": food(520, 22, "1 sandwich", "Khmer Food"),
+    "Grilled Fish with Rice": food(560, 36, "1 plate", "Khmer Food"),
+    "Grilled Pork Skewers with Rice": food(650, 30, "1 plate", "Khmer Food"),
+    "Fried Fish with Rice": food(620, 34, "1 plate", "Khmer Food"),
+    "Sour Soup with Fish": food(320, 24, "1 bowl", "Khmer Food"),
+    "Khmer Chicken Curry": food(560, 28, "1 bowl with rice", "Khmer Food"),
+    "Stir Fried Morning Glory": food(180, 6, "1 plate", "Khmer Food"),
+    "Stir Fried Beef with Ginger": food(500, 32, "1 plate with rice", "Khmer Food"),
+    "Stir Fried Pork with Basil": food(530, 26, "1 plate with rice", "Khmer Food"),
+    "Cambodian Mango Salad": food(220, 8, "1 plate", "Khmer Food"),
+    "Green Papaya Salad": food(180, 6, "1 plate", "Khmer Food"),
+    "Prahok Fried Rice": food(590, 22, "1 plate", "Khmer Food"),
+    "Trey Ngeat": food(420, 34, "1 serving with rice", "Khmer Food"),
+    "Kralan": food(330, 7, "1 bamboo tube serving", "Khmer Food"),
+    "Num Ansom": food(420, 12, "1 piece", "Khmer Food"),
+    "Palm Sugar Dessert": food(260, 4, "1 bowl", "Khmer Food"),
+
+    # Southeast / East Asian foods
+    "Pho": food(450, 24, "1 bowl", "Asian Food"),
+    "Beef Pho": food(480, 28, "1 bowl", "Asian Food"),
+    "Chicken Pho": food(420, 26, "1 bowl", "Asian Food"),
+    "Beef Noodle Soup": food(500, 27, "1 bowl", "Asian Food"),
+    "Chicken Noodle Soup": food(390, 24, "1 bowl", "Asian Food"),
+    "Ramen": food(520, 22, "1 bowl", "Asian Food"),
+    "Udon": food(430, 16, "1 bowl", "Asian Food"),
+    "Pad Thai": food(650, 24, "1 plate", "Asian Food"),
+    "Tom Yum Soup": food(280, 22, "1 bowl", "Asian Food"),
+    "Thai Green Curry": food(560, 26, "1 bowl with rice", "Asian Food"),
+    "Thai Basil Chicken Rice": food(620, 34, "1 plate", "Asian Food"),
+    "Hainanese Chicken Rice": food(620, 32, "1 plate", "Asian Food"),
+    "Chicken Teriyaki Rice": food(610, 35, "1 bowl", "Asian Food"),
+    "Bibimbap": food(560, 24, "1 bowl", "Asian Food"),
+    "Kimchi Fried Rice": food(520, 17, "1 plate", "Asian Food"),
+    "Korean BBQ Beef": food(700, 45, "1 serving", "Asian Food"),
+    "Dumplings": food(360, 16, "8 pieces", "Asian Food"),
+    "Spring Rolls": food(260, 8, "3 rolls", "Asian Food"),
+    "Egg Rolls": food(300, 9, "3 rolls", "Asian Food"),
+    "Sushi": food(350, 18, "8 pieces", "Asian Food"),
+    "Salmon Sashimi": food(240, 34, "1 plate", "Asian Food"),
+    "Japanese Curry Rice": food(650, 22, "1 plate", "Asian Food"),
+    "Katsu Curry": food(780, 34, "1 plate", "Asian Food"),
+    "Chicken Biryani": food(720, 32, "1 plate", "Asian Food"),
+    "Butter Chicken with Rice": food(760, 35, "1 plate", "Asian Food"),
+    "Nasi Goreng": food(650, 24, "1 plate", "Asian Food"),
+    "Satay Chicken": food(420, 32, "5 skewers", "Asian Food"),
+
+    # Western / international meals
+    "Pizza": food(285, 12, "1 slice", "International Food"),
+    "Pepperoni Pizza": food(320, 14, "1 slice", "International Food"),
+    "Cheese Pizza": food(280, 12, "1 slice", "International Food"),
+    "Hamburger": food(540, 25, "1 burger", "International Food"),
+    "Cheeseburger": food(620, 31, "1 burger", "International Food"),
+    "Hot Dog": food(330, 12, "1 hot dog", "International Food"),
+    "French Fries": food(365, 4, "1 medium serving", "International Food"),
+    "Fried Chicken": food(480, 30, "2 pieces", "International Food"),
+    "Chicken Nuggets": food(300, 15, "6 pieces", "International Food"),
+    "Sandwich": food(420, 20, "1 sandwich", "International Food"),
+    "Club Sandwich": food(650, 32, "1 sandwich", "International Food"),
+    "Tuna Sandwich": food(430, 28, "1 sandwich", "International Food"),
+    "Spaghetti": food(480, 18, "1 plate", "International Food"),
+    "Spaghetti Bolognese": food(650, 28, "1 plate", "International Food"),
+    "Carbonara": food(740, 26, "1 plate", "International Food"),
+    "Lasagna": food(620, 32, "1 serving", "International Food"),
+    "Steak": food(650, 50, "1 steak", "International Food"),
+    "Grilled Chicken Breast": food(335, 38, "1 cooked chicken breast", "International Food"),
+    "Roast Chicken": food(520, 42, "1 serving", "International Food"),
+    "Grilled Fish": food(300, 38, "1 fillet", "International Food"),
+    "Fish and Chips": food(820, 36, "1 plate", "International Food"),
+    "Omelette": food(300, 18, "1 omelette", "International Food"),
+    "Fried Egg": food(90, 6, "1 egg", "International Food"),
+    "Scrambled Eggs": food(220, 14, "2 eggs", "International Food"),
+    "Pancakes": food(430, 10, "3 pancakes", "International Food"),
+    "Waffles": food(410, 9, "2 waffles", "International Food"),
+    "Cereal with Milk": food(300, 10, "1 bowl", "International Food"),
+    "Oatmeal": food(250, 8, "1 bowl", "International Food"),
+    "Caesar Salad": food(420, 18, "1 bowl", "International Food"),
+    "Garden Salad": food(220, 8, "1 bowl", "International Food"),
+    "Chicken Salad": food(380, 32, "1 bowl", "International Food"),
+    "Burrito": food(700, 30, "1 burrito", "International Food"),
+    "Taco": food(210, 10, "1 taco", "International Food"),
+    "Nachos": food(550, 18, "1 plate", "International Food"),
+    "Fried Rice": food(520, 16, "1 plate", "International Food"),
+    "Chicken Fried Rice": food(590, 28, "1 plate", "International Food"),
+    "Shrimp Fried Rice": food(560, 26, "1 plate", "International Food"),
+
+    # Simple staples and proteins
+    "Rice": food(205, 4.3, "1 cup cooked", "Staple Food"),
+    "Brown Rice": food(215, 5, "1 cup cooked", "Staple Food"),
+    "Sticky Rice": food(240, 4, "1 cup cooked", "Staple Food"),
+    "Noodles": food(220, 7, "1 cup cooked", "Staple Food"),
+    "Bread": food(160, 6, "2 slices", "Staple Food"),
+    "Chicken": food(335, 38, "1 cooked chicken breast", "Protein Food"),
+    "Pork": food(420, 32, "1 serving", "Protein Food"),
+    "Beef": food(430, 36, "1 serving", "Protein Food"),
+    "Fish": food(240, 36, "1 fillet", "Protein Food"),
+    "Shrimp": food(180, 34, "1 serving", "Protein Food"),
+    "Tofu": food(180, 18, "1 serving", "Protein Food"),
+    "Egg": food(78, 6, "1 large egg", "Protein Food"),
+
+    # Fruits, snacks, desserts, drinks
+    "Apple": food(95, 0.5, "1 medium apple", "Fruit"),
+    "Banana": food(105, 1.3, "1 medium banana", "Fruit"),
+    "Orange": food(62, 1.2, "1 orange", "Fruit"),
+    "Mango": food(200, 2, "1 mango", "Fruit"),
+    "Pineapple": food(82, 0.9, "1 cup", "Fruit"),
+    "Watermelon": food(46, 0.9, "1 cup", "Fruit"),
+    "Avocado": food(240, 3, "1 avocado", "Fruit"),
+    "Ice Cream": food(270, 5, "1 cup", "Dessert"),
+    "Cake": food(350, 5, "1 slice", "Dessert"),
+    "Chocolate Cake": food(420, 6, "1 slice", "Dessert"),
+    "Donut": food(260, 4, "1 donut", "Dessert"),
+    "Cookie": food(150, 2, "1 large cookie", "Dessert"),
+    "Milk Tea": food(350, 6, "1 cup", "Drink"),
+    "Iced Coffee": food(180, 4, "1 cup", "Drink"),
+    "Smoothie": food(280, 6, "1 cup", "Drink"),
+    "Soda": food(150, 0, "1 can", "Drink"),
+}
+
+
+FOOD_ALIASES = {
+    "bai sach chrouk": "Bai Sach Chrouk",
+    "pork and rice": "Pork Rice",
+    "pork rice": "Pork Rice",
+    "beef loc lac": "Lok Lak",
+    "luc lac": "Lok Lak",
+    "loklak": "Lok Lak",
+    "fish amok": "Fish Amok",
+    "amok": "Fish Amok",
+    "nom banh chok": "Num Banh Chok",
+    "num banh chok": "Num Banh Chok",
+    "kuy teav": "Kuy Teav",
+    "beef noodle": "Beef Noodle Soup",
+    "beef noodle soup": "Beef Noodle Soup",
+    "pho": "Pho",
+    "phở": "Pho",
+    "vietnamese pho": "Pho",
+    "vietnamese noodle soup": "Pho",
+    "ramen noodles": "Ramen",
+    "pad thai noodles": "Pad Thai",
+    "sushi rolls": "Sushi",
+    "burger": "Hamburger",
+    "hamburger": "Hamburger",
+    "cheese burger": "Cheeseburger",
+    "hotdog": "Hot Dog",
+    "fries": "French Fries",
+    "chips": "French Fries",
+    "pepperoni pizza": "Pepperoni Pizza",
+    "pizza": "Pizza",
+    "fried chicken": "Fried Chicken",
+    "chicken nuggets": "Chicken Nuggets",
+    "spaghetti": "Spaghetti",
+    "spaghetti bolognese": "Spaghetti Bolognese",
+    "omelet": "Omelette",
+    "omelette": "Omelette",
+    "salad": "Garden Salad",
+    "fried rice": "Fried Rice",
+    "chicken fried rice": "Chicken Fried Rice",
 }
 
 
@@ -229,42 +206,73 @@ PORTION_MULTIPLIERS = {
 
 def get_food_names():
     """Return sorted food names for the correction dropdown."""
-    khmer_foods = [
-        food for food, info in FOOD_DATABASE.items() if info["category"] == "Khmer Food"
+    priority = [
+        "Khmer Food",
+        "Asian Food",
+        "International Food",
+        "Staple Food",
+        "Protein Food",
+        "Fruit",
+        "Dessert",
+        "Drink",
     ]
-    international_foods = [
-        food
-        for food, info in FOOD_DATABASE.items()
-        if info["category"] == "International Food"
-    ]
-    return sorted(khmer_foods) + sorted(international_foods)
+    ordered_foods = []
+    for category in priority:
+        ordered_foods.extend(
+            sorted(
+                food
+                for food, info in FOOD_DATABASE.items()
+                if info["category"] == category
+            )
+        )
+    return ordered_foods
 
 
 def find_food_match(predicted_label):
     """
-    Match an AI label to a database item using fuzzy matching.
+    Match an AI label to a database item using aliases and fuzzy matching.
     Returns the best match from FOOD_DATABASE keys.
     """
     if not predicted_label:
         return None
 
-    # 1. Clean the label
-    label = predicted_label.lower().replace("_", " ").strip()
+    label = normalize_food_name(predicted_label)
 
-    # 2. Try exact match or substring match first (fast)
+    if label in FOOD_ALIASES:
+        return FOOD_ALIASES[label]
+
     food_names = list(FOOD_DATABASE.keys())
-    for food in food_names:
-        if food.lower() == label or food.lower() in label or label in food.lower():
+    normalized_foods = {normalize_food_name(food): food for food in food_names}
+
+    if label in normalized_foods:
+        return normalized_foods[label]
+
+    for normalized_food, food in normalized_foods.items():
+        if normalized_food in label or label in normalized_food:
             return food
 
-    # 3. Use fuzzy matching for more complex differences
-    matches = difflib.get_close_matches(label, food_names, n=1, cutoff=0.4)
-    return matches[0] if matches else None
+    alias_matches = difflib.get_close_matches(label, FOOD_ALIASES.keys(), n=1, cutoff=0.72)
+    if alias_matches:
+        return FOOD_ALIASES[alias_matches[0]]
+
+    matches = difflib.get_close_matches(label, normalized_foods.keys(), n=1, cutoff=0.58)
+    return normalized_foods[matches[0]] if matches else None
+
+
+def normalize_food_name(name):
+    """Clean AI labels so Food101-style names match human-readable names."""
+    return (
+        name.lower()
+        .replace("_", " ")
+        .replace("-", " ")
+        .replace("/", " ")
+        .strip()
+    )
 
 
 def calculate_nutrition(food_name, portion_option, custom_grams=None):
     """Calculate calories and protein for the selected portion."""
-    food = FOOD_DATABASE[food_name]
+    food_item = FOOD_DATABASE[food_name]
 
     if portion_option == "Custom grams":
         # Approximation: 1 normal serving is treated as 250 grams for demo purposes.
@@ -275,7 +283,7 @@ def calculate_nutrition(food_name, portion_option, custom_grams=None):
         portion_label = portion_option
 
     return {
-        "calories": food["calories"] * multiplier,
-        "protein": food["protein"] * multiplier,
+        "calories": food_item["calories"] * multiplier,
+        "protein": food_item["protein"] * multiplier,
         "portion_label": portion_label,
     }
