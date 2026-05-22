@@ -46,6 +46,8 @@ type FoodResult = {
   fat: number;
   healthScore: number;
   coachMessage: string;
+  source: "backend" | "sample";
+  warning?: string;
 };
 
 const sampleFood: FoodResult = {
@@ -57,7 +59,10 @@ const sampleFood: FoodResult = {
   healthScore: 3,
   coachMessage:
     "Looks like a treat! Balance it with lighter meals today. This is higher in carbs and fat, but still okay in moderation.",
+  source: "sample",
 };
+
+const API_BASE_URL = "http://192.168.0.129:8000";
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>("landing");
@@ -109,12 +114,91 @@ export default function App() {
 }
 
 async function analyzeFoodImage(imageUri: string): Promise<FoodResult> {
-  // TODO: Send image to Python FastAPI backend later.
-  // Example endpoint: http://YOUR_LAPTOP_IP:8000/analyze-food
-  // Use FormData with the image URI, then map the API response into FoodResult.
-  console.log("Ready for backend image URI:", imageUri);
-  await new Promise((resolve) => setTimeout(resolve, 650));
-  return sampleFood;
+  // Sends the real phone image to the Python FastAPI backend.
+  // Later, this can be expanded to include portion size or OCR label scanning.
+  const formData = new FormData();
+  formData.append("image", {
+    uri: imageUri,
+    name: "food.jpg",
+    type: "image/jpeg",
+  } as unknown as Blob);
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/analyze-food`, {
+      method: "POST",
+      body: formData,
+    });
+    const data = await response.json();
+
+    if (!response.ok || data.success === false) {
+      throw new Error(data.error || "Backend analysis failed.");
+    }
+
+    const nutrition = data.nutrition;
+    const predictedName = data.matched_food || data.prediction?.label || "Unknown food";
+    const calories = Number(nutrition?.calories ?? sampleFood.calories);
+    const protein = Number(nutrition?.protein ?? sampleFood.protein);
+
+    return {
+      foodName: formatFoodName(predictedName),
+      calories: Math.round(calories),
+      protein: roundOneDecimal(protein),
+      carbs: estimateCarbs(calories),
+      fat: estimateFat(calories),
+      healthScore: scoreFood(calories, protein),
+      coachMessage: buildCoachMessage(predictedName, calories, protein, Boolean(data.matched_food)),
+      source: "backend",
+      warning: data.warning,
+    };
+  } catch (error) {
+    return {
+      ...sampleFood,
+      warning: `Backend unavailable, showing sample data. ${String(error)}`,
+    };
+  }
+}
+
+function formatFoodName(foodName: string) {
+  return foodName
+    .replace(/_/g, " ")
+    .split(" ")
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+function roundOneDecimal(value: number) {
+  return Math.round(value * 10) / 10;
+}
+
+function estimateCarbs(calories: number) {
+  return Math.max(0, Math.round((calories * 0.45) / 4));
+}
+
+function estimateFat(calories: number) {
+  return roundOneDecimal(Math.max(0, (calories * 0.3) / 9));
+}
+
+function scoreFood(calories: number, protein: number) {
+  let score = 7;
+  if (calories > 700) score -= 2;
+  if (calories > 1000) score -= 1;
+  if (protein >= 25) score += 1;
+  if (protein < 10) score -= 1;
+  return Math.max(1, Math.min(10, score));
+}
+
+function buildCoachMessage(foodName: string, calories: number, protein: number, hasNutritionMatch: boolean) {
+  if (!hasNutritionMatch) {
+    return "AI recognized the image, but this food is not in the local nutrition database yet. Use this as a rough estimate and confirm in the Streamlit app.";
+  }
+  if (calories > 700) {
+    return `Looks like ${formatFoodName(foodName)} is a heavier meal. Balance it with lighter foods later today.`;
+  }
+  if (protein >= 25) {
+    return `Good protein choice. ${formatFoodName(foodName)} can help you stay full and reach your protein goal.`;
+  }
+  return `This looks moderate. Pair it with a protein source if you need more protein today.`;
 }
 
 function LandingScreen({
@@ -293,7 +377,7 @@ function AddFoodResultScreen({
 
       <View style={styles.foodTitleRow}>
         <View>
-          <Text style={styles.foodUnit}>PIECE</Text>
+          <Text style={styles.foodUnit}>{result.source === "backend" ? "AI RESULT" : "SAMPLE RESULT"}</Text>
           <Text style={styles.foodName}>{result.foodName}</Text>
         </View>
         <View style={styles.portionControls}>
@@ -306,6 +390,13 @@ function AddFoodResultScreen({
           </Pressable>
         </View>
       </View>
+
+      {result.warning ? (
+        <View style={styles.warningBox}>
+          <Info color={colors.warning} size={18} />
+          <Text style={styles.warningText}>{result.warning}</Text>
+        </View>
+      ) : null}
 
       <View style={styles.nutritionGrid}>
         <NutritionCard icon={<Flame color={colors.warning} size={18} />} label="Calories" value={`${result.calories} kcal`} />
@@ -1017,6 +1108,22 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 12,
+  },
+  warningBox: {
+    flexDirection: "row",
+    gap: 10,
+    alignItems: "flex-start",
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: "rgba(255, 176, 32, 0.35)",
+    backgroundColor: "rgba(255, 176, 32, 0.10)",
+    padding: 12,
+  },
+  warningText: {
+    color: colors.warning,
+    flex: 1,
+    lineHeight: 20,
+    fontWeight: "700",
   },
   nutritionCardContent: {
     width: "44%",
