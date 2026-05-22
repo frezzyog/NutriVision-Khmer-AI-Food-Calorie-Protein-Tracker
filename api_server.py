@@ -43,9 +43,24 @@ async def analyze_food(image: UploadFile = File(...)):
     if matched_food:
         nutrition = calculate_nutrition(matched_food, "Medium (1x)")
         food_info = FOOD_DATABASE[matched_food]
+    else:
+        return {
+            "success": True,
+            "needs_manual_selection": True,
+            "prediction": prediction,
+            "matched_food": None,
+            "nutrition": None,
+            "food_info": None,
+            "warning": (
+                "AI could not match this image to the local nutrition database. "
+                "Please choose the correct food manually in the app."
+            ),
+            "all_predictions": result.get("all_predictions", []),
+        }
 
     return {
         "success": True,
+        "needs_manual_selection": False,
         "prediction": prediction,
         "matched_food": matched_food,
         "nutrition": nutrition,

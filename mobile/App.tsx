@@ -143,19 +143,20 @@ async function analyzeFoodImage(imageUri: string, apiBaseUrl: string): Promise<F
 
     const nutrition = data.nutrition;
     const predictedName = data.matched_food || data.prediction?.label || "Unknown food";
-    const calories = Number(nutrition?.calories ?? sampleFood.calories);
-    const protein = Number(nutrition?.protein ?? sampleFood.protein);
+    const hasNutrition = Boolean(nutrition && data.matched_food);
+    const calories = Number(nutrition?.calories ?? 0);
+    const protein = Number(nutrition?.protein ?? 0);
 
     return {
       foodName: formatFoodName(predictedName),
       calories: Math.round(calories),
       protein: roundOneDecimal(protein),
-      carbs: estimateCarbs(calories),
-      fat: estimateFat(calories),
-      healthScore: scoreFood(calories, protein),
-      coachMessage: buildCoachMessage(predictedName, calories, protein, Boolean(data.matched_food)),
+      carbs: hasNutrition ? estimateCarbs(calories) : 0,
+      fat: hasNutrition ? estimateFat(calories) : 0,
+      healthScore: hasNutrition ? scoreFood(calories, protein) : 1,
+      coachMessage: buildCoachMessage(predictedName, calories, protein, hasNutrition),
       source: "backend",
-      warning: data.warning,
+      warning: data.warning || (!hasNutrition ? "Nutrition estimate unavailable for this prediction." : undefined),
     };
   } catch (error) {
     return {
@@ -206,6 +207,13 @@ function buildCoachMessage(foodName: string, calories: number, protein: number, 
     return `Good protein choice. ${formatFoodName(foodName)} can help you stay full and reach your protein goal.`;
   }
   return `This looks moderate. Pair it with a protein source if you need more protein today.`;
+}
+
+function formatNutritionValue(value: number, unit: string) {
+  if (!value || value <= 0) {
+    return "Needs manual";
+  }
+  return `${value}${unit}`;
 }
 
 function LandingScreen({
@@ -425,10 +433,10 @@ function AddFoodResultScreen({
       ) : null}
 
       <View style={styles.nutritionGrid}>
-        <NutritionCard icon={<Flame color={colors.warning} size={18} />} label="Calories" value={`${result.calories} kcal`} />
-        <NutritionCard icon={<Zap color={colors.neon} size={18} />} label="Carbs" value={`${result.carbs}g`} />
-        <NutritionCard icon={<Utensils color={colors.warning} size={18} />} label="Protein" value={`${result.protein}g`} />
-        <NutritionCard icon={<Apple color={colors.secondary} size={18} />} label="Fat" value={`${result.fat}g`} />
+        <NutritionCard icon={<Flame color={colors.warning} size={18} />} label="Calories" value={formatNutritionValue(result.calories, "kcal")} />
+        <NutritionCard icon={<Zap color={colors.neon} size={18} />} label="Carbs" value={formatNutritionValue(result.carbs, "g")} />
+        <NutritionCard icon={<Utensils color={colors.warning} size={18} />} label="Protein" value={formatNutritionValue(result.protein, "g")} />
+        <NutritionCard icon={<Apple color={colors.secondary} size={18} />} label="Fat" value={formatNutritionValue(result.fat, "g")} />
       </View>
 
       <View style={styles.healthScoreRow}>
